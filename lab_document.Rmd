@@ -28,7 +28,7 @@ Rstudio Guidance on Git and Github (Including Branching/Pull Requests): https://
 Here is the link to the database search via the UVA Library that should lead you to LexusNexus (Now Nexas Uni)
 https://guides.lib.virginia.edu/az.php?a=l
 
-
+a
 # Group Work{.tabset}
 
 ## Joseph's Section
