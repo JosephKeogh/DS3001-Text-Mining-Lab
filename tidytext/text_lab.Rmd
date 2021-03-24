@@ -1,0 +1,91 @@
+---
+title: "text_lab"
+author: "Brian Wright"
+date: "9/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, )
+```
+
+
+# Problem Statement
+Congratulations you've successfully transferred from being a NBA 'quant' scout to a consultant specializing in education policy! You've been hired by a lobbying firm in secret to track the level of support nationally and if possible regionally for education related policy issues. The goal is to get a general idea of patterns associated education policy issues. In doing so your data science team has decided to explore periodicals from around the country in a effort to track the relative positive or negative sentiment associated with articles that focus on "Education". Luckily your team has access to a world class library search engine call LexusNexus (NexusUni) that provides access to newspapers from around the country dating back decades. You'll first need to decided what words you want to track and what time might be interesting to begin your search. 
+
+You'll need to select several newspapers (maybe from different parts of the country) limiting the search to 100 articles from each paper, search for education articles and run sentiment analysis with each newspaper serving as a corpus and then compare the level of positive or negative connotation associated with the outcomes. Also, run tf-idf on each corpus (newspapers) and work to compare the differences between the distributions (5 to 6 newspapers should be fine)
+
+Your main goal (and the goal of all practicing data scientists!) is to translate this information into action. What recommendations would you make and why? Be as specific as possible, but keep in mind this is an initial exploratory effort...more analysis might be needed...but the result can and should advise the next steps you present to the firm. 
+
+
+Please submit a cleanly knitted HTML file describing in detail the steps you took along the way, the results of your analysis and most importantly the recommendations you are making to your clients.  You will report your recommendations next week in class. This will be 5 minutes per group, just walk us through the recommendations section of your file. 
+
+
+Here is the link to the database search via the UVA Library that should lead you to LexusNexus (Now Nexas Uni)
+https://guides.lib.virginia.edu/az.php?a=l
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
