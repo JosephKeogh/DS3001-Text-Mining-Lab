@@ -60,14 +60,170 @@ Telegraph Herald - Iowa
 
 The Daily Oklahoman - Oklahoma
 
-
 ### Choose Articles
 
+Articles were chosen from the two Newspapers, all that were available were used
+
 ### Get the data
+```{r}
+
+# read in the raw data
+docs_1 <- read_lines("mid_west_file_1_1.rtf")
+
+# put the data into a tibble
+docs_1 <- tibble(docs_1)
+
+# here will still have the {} symbols and a lot of giberish
+
+# remove all the info contained in {} and some giberish
+docs_1 <- docs_1 %>%
+  unnest_tokens(word, docs_1) 
+
+# remove unimportant words
+docs_1 = docs_1 %>% 
+  anti_join(stop_words) 
+
+# find the count of each word
+docs_1 = docs_1 %>%
+  count(word, sort = TRUE)
+
+docs_1 <- docs_1 %>% 
+  filter(!grepl("[[:digit:]]", word)) 
+
+docs_1 <- docs_1 %>%
+  filter(!str_detect(word, "na"))
+
+view(docs_1)
+```
+
+```{r}
+# read in the raw data
+docs_2 <- read_lines("mid_west_file_2_1.rtf")
+
+# put the data into a tibble
+docs_2 <- tibble(docs_2)
+
+# here will still have the {} symbols and a lot of giberish
+
+# remove all the info contained in {} and some giberish
+docs_2 <- docs_2 %>%
+  unnest_tokens(word, docs_2) 
+
+# remove unimportant words
+docs_2 = docs_2 %>% 
+  anti_join(stop_words) 
+
+# find the count of each word
+docs_2 = docs_2 %>%
+  count(word, sort = TRUE)
+
+docs_2 <- docs_2 %>% 
+  filter(!grepl("[[:digit:]]", word)) 
+
+docs_2 <- docs_2 %>%
+  filter(!str_detect(word, "na"))
+
+view(docs_2)
+```
+
 
 ### Process the data
+This section does not work, unnest_tokens is not working inside the function
+```{r}
+
+process_rtf = function(rtf_result){
+  
+  rtf_tibble = tibble(rtf_result) %>%
+    mutate(rtf_result = as.character(rtf_result))
+  
+  # remove all the info contained in {} and some giberish
+  rtf_tibble <- rtf_tibble %>%
+    unnest_tokens(word, rtf_tibble) 
+  
+  # remove unimportant words
+  rtf_tibble = rtf_tibble %>% 
+    anti_join(stop_words) 
+  
+  # find the count of each word
+  rtf_tibble = rtf_tibble %>%
+    count(word, sort = TRUE)
+  
+  rtf_tibble <- rtf_tibble %>% 
+    filter(!grepl("[[:digit:]]", word)) 
+  
+  rtf_tibble <- rtf_tibble %>%
+    filter(!str_detect(word, "na"))
+  
+  return(rtf_tibble)
+}
+
+# read in the raw data
+docs <- read_lines("mid_west_file_1_1.rtf")
+
+a = process_rtf(docs)
+```
+
+
+```{r}
+combined = rbind(docs_1, docs_2) %>%
+  group_by(word) %>%
+  summarize(n=sum(n)) %>%
+  arrange(-n)
+
+combined
+```
+
 
 ### Sentiment Analysis
+```{r}
+# load sentiment data
+get_sentiments('afinn')
+get_sentiments('nrc')
+get_sentiments('bing')
+```
+```{r}
+combined_afinn = combined %>%
+  inner_join(get_sentiments("afinn"))
+combined_nrc = combined %>%
+  inner_join(get_sentiments("nrc"))
+combined_bing = combined %>%
+  inner_join(get_sentiments("bing"))
+```
+
+### Plots
+```{r}
+
+afinn_plot = function(afinn_data){
+  plt = afinn_data %>%
+    group_by(value) %>%
+    summarize(n=n()) %>%
+    ggplot(
+      aes(
+        x=value,
+        y=n,
+        fill=n
+      )
+    )+
+    geom_bar(
+      stat='identity'
+    )+
+    geom_smooth(
+      method='loess',
+      se=F
+    )
+  
+  return(plt)
+}
+
+plt = afinn_plot(combined_afinn)
+
+plt
+```
+
+
+
+
+
 
 ### TF and IDF Analysis
 
