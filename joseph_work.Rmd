@@ -131,14 +131,16 @@ view(docs_2)
 This section does not work, unnest_tokens is not working inside the function
 ```{r}
 
-process_rtf = function(rtf_result){
+process_rtf = function(file_name){
+  
+  rtf_result = read_lines(file_name)
   
   rtf_tibble = tibble(rtf_result) %>%
     mutate(rtf_result = as.character(rtf_result))
   
   # remove all the info contained in {} and some giberish
   rtf_tibble <- rtf_tibble %>%
-    unnest_tokens(word, rtf_tibble) 
+    unnest_tokens(word, rtf_result) 
   
   # remove unimportant words
   rtf_tibble = rtf_tibble %>% 
@@ -155,12 +157,13 @@ process_rtf = function(rtf_result){
     filter(!str_detect(word, "na"))
   
   return(rtf_tibble)
+
 }
 
-# read in the raw data
-docs <- read_lines("mid_west_file_1_1.rtf")
+file_name="mid_west_file_1_1.rtf"
 
-a = process_rtf(docs)
+a = process_rtf(file_name)
+
 ```
 
 
@@ -193,10 +196,16 @@ combined_bing = combined %>%
 ### Plots
 ```{r}
 
+afinn_to_histogram_data = function(afinn_data){
+  temp = afinn_data %>%
+    group_by(value)%>%
+    summarize(n=n())
+  
+  return(temp)
+}
+
 afinn_plot = function(afinn_data){
   plt = afinn_data %>%
-    group_by(value) %>%
-    summarize(n=n()) %>%
     ggplot(
       aes(
         x=value,
@@ -209,19 +218,99 @@ afinn_plot = function(afinn_data){
     )+
     geom_smooth(
       method='loess',
-      se=F
+      se=F,
+      formula='y~x'
     )
   
   return(plt)
 }
 
-plt = afinn_plot(combined_afinn)
+plt = combined_afinn %>%
+  afinn_to_histogram_data() %>%
+  afinn_plot()
 
 plt
 ```
 
+```{r}
+
+afinn_cloud_plot = function(afinn_data){
+  plt = afinn_data %>%
+  head(50) %>%
+  ggplot(
+    aes(
+      label=word,
+      size=n
+    )
+  )+
+  geom_text_wordcloud(
+  )+
+  theme_minimal()
+  
+  return(plt)
+}
+
+afinn_cloud_plot(combined_afinn)
+```
 
 
+```{r}
+
+west_afinn = combined_afinn
+
+east_afinn = combined_afinn
+
+all_regions_afinn = rbind(west_afinn %>% mutate(region='west'), east_afinn %>% mutate(region='east'))
+
+
+west_afinn_hist_data = west_afinn %>%
+  afinn_to_histogram_data()%>%
+  mutate(region='west')
+
+east_afinn_hist_data = east_afinn %>%
+  afinn_to_histogram_data()%>%
+  mutate(region='east')
+
+all_regions_hist_data = rbind(west_afinn_hist_data, east_afinn_hist_data)
+
+
+```
+
+
+```{r}
+all_regions_hist_data %>%
+  afinn_plot() +
+  facet_wrap(
+    .~region
+  )
+```
+
+
+```{r}
+all_regions_afinn %>%
+  afinn_cloud_plot(
+  )+
+  facet_wrap(
+    .~region
+  )
+```
+
+
+
+```{r}
+all_regions %>%
+  ggplot(
+    aes(
+      x=value
+    )
+  )+
+  facet_wrap(
+    .~region
+  )+
+  geom_density(
+    stat='density'
+  )
+```
 
 
 
