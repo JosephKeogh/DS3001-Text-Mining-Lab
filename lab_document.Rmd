@@ -5,12 +5,12 @@ date: "3/24/2021"
 output: html_document
 ---
 
-aldfjaldkjfaldkjfalsdjkfalsdjkf
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+# Problem Statement
 Congratulations you've successfully transferred from being a NBA 'quant' scout to a consultant specializing in US national sentiment! You've been hired by a non-profit in secret to track the level of support nationally and regionally for the field of Data Science. The goal is to get a general idea of patterns associated with articles being written on the broad topic of Data Science (you can also choose to select a sub-topic). In doing so your data science team has decided to explore periodicals from around the country in a effort to track the relative positive or negative sentiment and word frequencies. Luckily your team has access to a world class library search engine call LexusNexus (NexusUni) that provides access to newspapers from around the country dating back decades. You'll first need to decided what words you want to track and what time might be interesting to begin your search. 
 
 You'll need to select several newspapers from different regions in the country limiting the search to 100 articles from each paper, run sentiment analysis with each newspaper serving as a corpus and then compare the level of positive or negative connotation associated with the outcomes. Also, run tf-idf on each corpus (newspapers) and work to compare the differences between the distributions (5 to 6 newspapers should be fine)
@@ -30,10 +30,273 @@ Rstudio Guidance on Git and Github (Including Branching/Pull Requests): https://
 Here is the link to the database search via the UVA Library that should lead you to LexusNexus (Now Nexas Uni)
 https://guides.lib.virginia.edu/az.php?a=l
 
-# Group Work{.tabset}
 
-## Joseph's Section
+# Newspapers Selected{.tabset}
 
-## Jaden's Section
+## Eastern Newspapers
 
-## Jonathan's Section
+## Midwestern Newspapers
+
+The Telegraph Herald - Iowa
+
+The Daily Oklahoman - Oklahoma
+
+## Western Newspapers
+
+# Import the data
+```{r}
+midwest_file_1 = "mid_west_file_1_1.rtf"
+midwest_file_2 = "mid_west_file_2_1.rtf"
+
+#todo add your file names here
+```
+
+## Process and clean data for text analysis
+```{r}
+# function to clean and process the rtf files
+process_rtf = function(file_name){
+  
+  rtf_result = read_lines(file_name)
+  
+  rtf_tibble = tibble(rtf_result) %>%
+    mutate(rtf_result = as.character(rtf_result))
+  
+  # remove all the info contained in {} and some giberish
+  rtf_tibble <- rtf_tibble %>%
+    unnest_tokens(word, rtf_result) 
+  
+  # remove unimportant words
+  rtf_tibble = rtf_tibble %>% 
+    anti_join(stop_words) 
+  
+  # find the count of each word
+  rtf_tibble = rtf_tibble %>%
+    count(word, sort = TRUE)
+  
+  rtf_tibble <- rtf_tibble %>% 
+    filter(!grepl("[[:digit:]]", word)) 
+  
+  rtf_tibble <- rtf_tibble %>%
+    filter(!str_detect(word, "na"))
+  
+  return(rtf_tibble)
+
+}
+```
+
+```{r}
+midwest_1 = process_rtf(midwest_file_1)
+midwest_2 = process_rtf(midwest_file_2)
+
+#todo add your file names and create your usable datasets
+```
+
+## Combine newspapers into regions
+```{r}
+combined_newspapers_into_regions = function(paper1, paper2){
+  temp = rbind(midwest_1, midwest_2) %>%
+  group_by(word) %>%
+  summarize(n=sum(n)) %>%
+  arrange(-n)
+  
+  return(temp)
+}
+```
+
+```{r}
+midwest = combined_newspapers_into_regions(midwest_1, midwest_2)
+
+#todo add your regions here
+```
+
+# Sentiment analysis
+```{r}
+# load sentiment data
+get_sentiments('afinn')
+get_sentiments('nrc')
+get_sentiments('bing')
+```
+
+## Create sentiment analysis for each region
+```{r}
+sentiment = function(raw){
+  
+  afinn = raw %>%
+    inner_join(get_sentiments("afinn"))
+  
+  nrc = raw %>%
+    inner_join(get_sentiments("nrc"))
+  
+  bing = raw %>%
+    inner_join(get_sentiments("bing"))
+  
+  return(list("afinn" = afinn, "nrc" = nrc, "bing" = bing))
+}
+```
+
+```{r}
+midwest_sent = sentiment(midwest)
+midwest_afinn = midwest_sent$afinn
+midwest_nrc = midwest_sent$nrc
+midwest_bing = midwest_sent$bing
+
+# todo add your region and sentiment analysis here
+```
+
+
+# Plots
+```{r}
+
+# a function that takes in afinn data and readies it for the creation of a histogram (fancy bar plot)
+afinn_to_histogram_data = function(afinn_data){
+  temp = afinn_data %>%
+    group_by(value)%>%
+    summarize(n=n())
+  
+  return(temp)
+}
+
+# create the afinn plot we desire
+afinn_plot = function(afinn_data){
+  plt = afinn_data %>%
+    ggplot(
+      aes(
+        x=value,
+        y=n,
+        fill=n
+      )
+    )+
+    geom_bar(
+      stat='identity'
+    )+
+    geom_smooth(
+      method='loess',
+      se=F,
+      formula='y~x'
+    )
+  
+  return(plt)
+}
+```
+
+
+## Histogram
+
+### Combine regional data for histogram
+```{r}
+
+# todo remove this, it is just a place holder to test the facet plot
+east_afinn = midwest_afinn
+
+# prep the data for the histogram
+midwest_afinn_hist_data = midwest_afinn %>%
+  afinn_to_histogram_data() %>%
+  mutate(region = 'midwest')
+
+east_afinn_hist_data = east_afinn %>%
+  afinn_to_histogram_data() %>%
+  mutate(region = 'east')
+
+# todo add west region here
+
+# todo add west region to the rbind statement
+all_regions_afinn_hist_data = rbind(midwest_afinn_hist_data, east_afinn_hist_data)
+```
+
+```{r}
+all_regions_hist_data %>%
+  afinn_plot() +
+  facet_wrap(
+    .~region
+  )
+```
+
+
+## Cloud Plot
+```{r}
+afinn_cloud_plot = function(afinn_data){
+  plt = afinn_data %>%
+  head(50) %>%
+  ggplot(
+    aes(
+      label=word,
+      size=n
+    )
+  )+
+  geom_text_wordcloud(
+  )+
+  theme_minimal()
+  
+  return(plt)
+}
+
+```
+
+
+### Combine data for cloud plot
+```{r}
+# todo add west region to the rbind statement
+all_regions_afinn = rbind(west_afinn %>% mutate(region='west'), east_afinn %>% mutate(region='east'))
+
+```
+
+```{r}
+all_regions_afinn %>%
+  afinn_cloud_plot(
+  )+
+  facet_wrap(
+    .~region
+  )
+```
+
+
+# Analysis
+
+# Conclusion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
