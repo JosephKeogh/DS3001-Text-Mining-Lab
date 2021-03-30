@@ -43,7 +43,6 @@ save.image("tidytext.RData")
 ```{r}
 PHdocs <- read_lines("PhillyFiles.RTF")
 PHdocs <- tibble(PHdocs)
-View(PHdocs)
 PHdocs$PHdocs <- as.character(PHdocs$PHdocs)
 PHdocs <- PHdocs %>%
   unnest_tokens(word, PHdocs) %>%
@@ -51,8 +50,15 @@ PHdocs <- PHdocs %>%
   count(word, sort = TRUE)
 
 View(PHdocs)
-```
 
+
+PHdocs <- PHdocs %>% 
+  filter(!grepl("[[:digit:]]", word))
+
+
+View(PHdocs)
+```
+#New York - New York Times
 ```{r}
 NYdocs <- read_lines("NYFiles.RTF")
 NYdocs <- tibble(NYdocs)
@@ -63,6 +69,10 @@ NYdocs <- NYdocs %>%
   anti_join(stop_words)%>%
   count(word, sort = TRUE)
 
-view(NYdocs)
+NYdocs <- NYdocs %>% 
+  filter(!grepl("[[:digit:]]", word))
+
+View(NYdocs)
 ```
+
 
