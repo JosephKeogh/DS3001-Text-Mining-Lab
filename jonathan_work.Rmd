@@ -55,6 +55,7 @@ View(PHdocs)
 PHdocs <- PHdocs %>% 
   filter(!grepl("[[:digit:]]", word))
 
+PHdocs <- PHdocs[-c(1, 2, 4, 5, 6, 7, 8, 9, 12),]
 
 View(PHdocs)
 ```
@@ -62,17 +63,140 @@ View(PHdocs)
 ```{r}
 NYdocs <- read_lines("NYFiles.RTF")
 NYdocs <- tibble(NYdocs)
-View(NYdocs)
 NYdocs$NYdocs <- as.character(NYdocs$NYdocs)
-NYdocs <- NYdocs %>%
+
+NYdocsWords <- NYdocs %>%
   unnest_tokens(word, NYdocs) %>%
   anti_join(stop_words)%>%
   count(word, sort = TRUE)
 
-NYdocs <- NYdocs %>% 
+NYdocsWords <- NYdocsWords %>% 
   filter(!grepl("[[:digit:]]", word))
 
-View(NYdocs)
+NYdocsWords <- NYdocsWords[(5:10830),]
+NYdocsWords <- NYdocsWords[-c(2, 4, 8, 13, 14, 9),]
+View(NYdocsWords)
 ```
+
+```{r}
+get_sentiments('afinn')
+get_sentiments('nrc')
+get_sentiments('bing')
+
+```
+
+```{r}
+NYdocs_sentiment_afinn <- NYdocsWords %>%
+  inner_join(get_sentiments("afinn"))
+
+NYdocs_sentiment_nrc <- NYdocsWords %>%
+  inner_join(get_sentiments("nrc"))
+
+NYdocs_sentiment_bing <- NYdocsWords %>%
+  inner_join(get_sentiments("bing"))
+
+View(NYdocs_sentiment_afinn)
+View(NYdocs_sentiment_nrc)
+View(NYdocs_sentiment_bing)
+```
+
+```{r}
+PHdocs_sentiment_afinn <- PHdocs %>%
+  inner_join(get_sentiments("afinn"))
+
+PHdocs_sentiment_nrc <- PHdocs %>%
+  inner_join(get_sentiments("nrc"))
+
+PHdocs_sentiment_bing <- PHdocs%>%
+  inner_join(get_sentiments("bing"))
+
+View(PHdocs_sentiment_afinn)
+View(PHdocs_sentiment_nrc)
+View(PHdocs_sentiment_bing)
+```
+
+```{r}
+table(PHdocs_sentiment_bing$sentiment)
+table(PHdocs_sentiment_nrc$sentiment)
+table(PHdocs_sentiment_afinn$value)
+
+table(NYdocs_sentiment_bing$sentiment)
+table(NYdocs_sentiment_nrc$sentiment)
+table(NYdocs_sentiment_afinn$value)
+```
+
+```{r}
+ggplot(data = PHdocs_sentiment_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Pittsburgh Gazette Sentiment Range")+
+  scale_x_continuous(
+    breaks = seq(-5, 5, by = 1),
+    limits = c(-5, 5)
+  ) + 
+  theme_minimal()
+
+ggplot(data = NYdocs_sentiment_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("New York Times Sentiment Range")+
+  scale_x_continuous(
+    breaks = seq(-5, 5, by = 1),
+    limits = c(-5, 5)
+  ) + 
+  theme_minimal()
+```
+
+```{r}
+set.seed(42)
+ggplot(PHdocs[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+
+ggplot(NYdocsWords[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+```{r}
+NYdocs_raw <- as.tibble(read_lines("NYFiles.RTF"))
+NYdocs_raw
+PHdocs_raw <- as.tibble(read_lines("PhillyFiles.RTF"))
+PHdocs_raw
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
+}
+
+NYdocs_bag <- data_prep(NYdocs_raw,'V1','V19297')
+PHdocs_bag <- data_prep(PHdocs_raw, 'V1', 'V7171')
+
+newspapers <- c("NewYorkTimes", "PittsburghGazette")
+
+tf_idf_text <- tibble(newspapers,text=t(tibble(NYdocs_bag, PHdocs_bag,.name_repair = "universal")))
+
+View(tf_idf_text)
+
+word_count <- tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(newspapers, word, sort = TRUE)
+
+total_words <- word_count %>% 
+  group_by(newspapers) %>% 
+  summarize(total = sum(n))
+
+inag_words <- left_join(word_count, total_words)
+
+inag_words <- inag_words %>%
+  bind_tf_idf(word, newspapers, n)
+
+View(inag_words)
+
+```
+
 
 
