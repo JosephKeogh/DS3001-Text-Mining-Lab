@@ -10,6 +10,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+```{r}
+library(tidyverse)
+library(tidytext)
+library(textdata)
+# install.packages("tidyselect")
+library(tidyselect)
+library(stringr)
+library(DT)
+# install.packages("topicmodels")
+library(tm)
+library(plotly)
+library(topicmodels)
+library(ggplot2)
+library(ggwordcloud)
+# save.image("innovedu.RData")
+```
+
+
 # Problem Statement
 Congratulations you've successfully transferred from being a NBA 'quant' scout to a consultant specializing in US national sentiment! You've been hired by a non-profit in secret to track the level of support nationally and regionally for the field of Data Science. The goal is to get a general idea of patterns associated with articles being written on the broad topic of Data Science (you can also choose to select a sub-topic). In doing so your data science team has decided to explore periodicals from around the country in a effort to track the relative positive or negative sentiment and word frequencies. Luckily your team has access to a world class library search engine call LexusNexus (NexusUni) that provides access to newspapers from around the country dating back decades. You'll first need to decided what words you want to track and what time might be interesting to begin your search. 
 
@@ -47,6 +65,8 @@ The Daily Oklahoman - Oklahoma
 ```{r}
 midwest_file_1 = "mid_west_file_1_1.rtf"
 midwest_file_2 = "mid_west_file_2_1.rtf"
+east_file_1 = "NYFiles.RTF"
+east_file_2 = "PhillyFiles.RTF"
 
 #todo add your file names here
 ```
@@ -87,6 +107,8 @@ process_rtf = function(file_name){
 ```{r}
 midwest_1 = process_rtf(midwest_file_1)
 midwest_2 = process_rtf(midwest_file_2)
+east_1 = process_rtf(east_file_1)
+east_2 = process_rtf(east_file_2)
 
 #todo add your file names and create your usable datasets
 ```
@@ -94,7 +116,7 @@ midwest_2 = process_rtf(midwest_file_2)
 ## Combine newspapers into regions
 ```{r}
 combined_newspapers_into_regions = function(paper1, paper2){
-  temp = rbind(midwest_1, midwest_2) %>%
+  temp = rbind(paper1, paper2) %>%
   group_by(word) %>%
   summarize(n=sum(n)) %>%
   arrange(-n)
@@ -105,7 +127,7 @@ combined_newspapers_into_regions = function(paper1, paper2){
 
 ```{r}
 midwest = combined_newspapers_into_regions(midwest_1, midwest_2)
-
+east = combined_newspapers_into_regions(east_1, east_2)
 #todo add your regions here
 ```
 
@@ -139,6 +161,11 @@ midwest_sent = sentiment(midwest)
 midwest_afinn = midwest_sent$afinn
 midwest_nrc = midwest_sent$nrc
 midwest_bing = midwest_sent$bing
+
+east_sent = sentiment(east)
+east_afinn = east_sent$afinn
+east_nrc = east_sent$nrc
+east_bing = east_sent$bing
 
 # todo add your region and sentiment analysis here
 ```
@@ -185,9 +212,6 @@ afinn_plot = function(afinn_data){
 ### Combine regional data for histogram
 ```{r}
 
-# todo remove this, it is just a place holder to test the facet plot
-east_afinn = midwest_afinn
-
 # prep the data for the histogram
 midwest_afinn_hist_data = midwest_afinn %>%
   afinn_to_histogram_data() %>%
@@ -204,7 +228,7 @@ all_regions_afinn_hist_data = rbind(midwest_afinn_hist_data, east_afinn_hist_dat
 ```
 
 ```{r}
-all_regions_hist_data %>%
+all_regions_afinn_hist_data %>%
   afinn_plot() +
   facet_wrap(
     .~region
@@ -236,7 +260,7 @@ afinn_cloud_plot = function(afinn_data){
 ### Combine data for cloud plot
 ```{r}
 # todo add west region to the rbind statement
-all_regions_afinn = rbind(west_afinn %>% mutate(region='west'), east_afinn %>% mutate(region='east'))
+all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'))
 
 ```
 
