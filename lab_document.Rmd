@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r, include = FALSE, echo = FALSE, results = FALSE}
+```{r}
 library(tidyverse)
 library(tidytext)
 library(textdata)
@@ -268,7 +268,7 @@ east_afinntop50 <-  head(arrange(east_afinntop50, desc(n)), 50)
 
 west_afinntop50 <- west_afinn %>% 
   mutate(region = 'west')
-west_afinntop50 <- head(arrange(west_afinntop50, desc(value)), 50) 
+west_afinntop50 <- head(arrange(west_afinntop50, desc(n)), 50) 
 
 all_regions_afinn = rbind(midwest_afinntop50, east_afinntop50, west_afinntop50)
 ```
@@ -359,16 +359,10 @@ IDFplot
 
 # Analysis
 
+  The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, the LA times, and the Spokesman Review. To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East and the Midwest were care, united, and innovation. Popular words used in the West were amazing, win, and love. The top 10 words with the highest TF-IDF values were absentee, accident, amusement, bullshit, earnest, hate, highlight, prisoners, scoop, and unified.  The TF-IDF values indicates how rare the word is within a newspaper.  
+  
+# Conclusion 
 
-Your main goal (and the goal of all practicing data scientists!) is to translate this information into action. What patterns do you see, why do you believe this to be the case? What additional information might you want? Be as specific as possible, but keep in mind this is an initial exploratory effort...more analysis might be needed...but the result can and should advise the next steps you present to the firm. 
-
-
-Please submit a cleanly knitted HTML file describing in detail the steps you took along the way, the results of your analysis and most importantly the implications/next steps you would recommend.  You will report your final results and recommendations next week in class. This will be 5 minutes per group. 
-
-
-  The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, . To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East, the Midwest, and the West were innovation, care, united, and support. 
-
-# Conclusion
 
 
 
