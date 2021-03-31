@@ -281,9 +281,19 @@ afinn_cloud_plot = function(afinn_data){
 
 ### Combine data for cloud plot
 ```{r}
-# todo add west region to the rbind statement
-all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'), west_afinn %>% mutate(region = 'west'))
+midwest_afinntop50 <- midwest_afinn %>% 
+  mutate(region = 'midwest') 
+midwest_afinntop50 <- head(arrange(midwest_afinntop50, desc(n)), 50) 
 
+east_afinntop50 <- east_afinn %>% 
+  mutate(region = 'east')
+east_afinntop50 <-  head(arrange(east_afinntop50, desc(n)), 50) 
+
+west_afinntop50 <- west_afinn %>% 
+  mutate(region = 'west')
+west_afinntop50 <- head(arrange(west_afinntop50, desc(value)), 50) 
+
+all_regions_afinn = rbind(midwest_afinntop50, east_afinntop50, west_afinntop50)
 ```
 
 ```{r}
@@ -291,7 +301,7 @@ all_regions_afinn %>%
   afinn_cloud_plot(
   )+
   facet_wrap(
-    .~region
+    .~region 
   )
 ```
 
@@ -349,9 +359,9 @@ newswords <- newswords %>%
 ## TF-IDF Plot
 
 ```{r}
-newswords_top20 <- head(arrange(newswords, desc(tf_idf)), 20)
-newswords_top20
-IDFplot <- newswords_top20 %>%
+newswords_top10 <- head(arrange(newswords, desc(tf_idf)), 10)
+newswords_top10
+IDFplot <- newswords_top10 %>%
   ggplot(
     aes(
       x = word,
@@ -373,8 +383,7 @@ IDFplot
 ```
 
 # Analysis
-
-
+  The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, . To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East, the Midwest, and the West were innovation, care, united, and support. 
 # Conclusion
 
 
