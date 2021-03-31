@@ -295,7 +295,7 @@ all_regions_afinn %>%
   )
 ```
 
-###TF-IDF Analysis
+# TF-IDF Analysis
 ```{r}
 
 data_prep <- function(x,y,z){
@@ -347,6 +347,7 @@ newswords <- newswords %>%
 
 View(newswords)
 ```
+## TF-IDF Plot
 
 ```{r}
 newswords_top20 <- head(arrange(newswords, desc(tf_idf)), 20)
@@ -373,6 +374,7 @@ IDFplot
 ```
 
 # Analysis
+
 
 # Conclusion
 
