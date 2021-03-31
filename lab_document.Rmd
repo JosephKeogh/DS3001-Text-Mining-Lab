@@ -243,7 +243,7 @@ east_afinn_hist_data = east_afinn %>%
 
 # todo add west region here
 west_afinn_hist_data = west_afinn %>%
-  affin_to_histogram_data() %>%
+  afinn_to_histogram_data() %>%
   mutate(region = 'west')
 
 # todo add west region to the rbind statement
@@ -282,7 +282,7 @@ afinn_cloud_plot = function(afinn_data){
 ### Combine data for cloud plot
 ```{r}
 # todo add west region to the rbind statement
-all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'), west_affin %>% mutate(region = 'west'))
+all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'), west_afinn %>% mutate(region = 'west'))
 
 ```
 
@@ -345,7 +345,6 @@ newswords <- newswords %>%
   bind_tf_idf(word, newspapers, n)
 
 
-View(newswords)
 ```
 ## TF-IDF Plot
 
