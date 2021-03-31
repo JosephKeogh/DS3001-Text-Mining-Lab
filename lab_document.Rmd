@@ -51,7 +51,7 @@ The LA Times - California
 Spokesman Review - Washington
 
 # Import the data
-```{r}
+```{r, results = FALSE, warning = FALSE, message = FALSE}
 midwest_file_1 = "mid_west_file_1_1.rtf"
 midwest_file_2 = "mid_west_file_2_1.rtf"
 east_file_1 = "NYFiles.RTF"
@@ -131,7 +131,7 @@ get_sentiments('bing')
 ```
 
 ## Create sentiment analysis for each region
-```{r}
+```{r, results = FALSE, warning = FALSE, message = FALSE}
 sentiment = function(raw){
   
   afinn = raw %>%
@@ -283,7 +283,7 @@ all_regions_afinn %>%
 ```
 
 # TF-IDF Analysis
-```{r}
+```{r, results = FALSE, warning = FALSE, message = FALSE}
 
 data_prep <- function(x,y,z){
   i <- as_tibble(t(x))
