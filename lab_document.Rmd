@@ -32,7 +32,6 @@ library(ggwordcloud)
 The purpose of this lab was to track the level of support nationally and regionally for the field of Data Science. The goal was to get a general idea of patterns associated with articles being written on the broad topic of data science. To do this, our team explored periodicals from around the country to track relative positive or negative sentiments and word frequencies. We used the library search engine NexusUni to find newspapers from different regions of the U.S. We also divided up the country into 3 main regions for analysis - the east coast, west coast, and midwest. From each region, two main newspapers were selected with no more than 100 articles each on the topic of data science.
 
 
-
 # Newspapers Selected{.tabset}
 
 ## Eastern Newspapers
@@ -265,9 +264,19 @@ afinn_cloud_plot = function(afinn_data){
 
 ### Combine data for cloud plot
 ```{r}
-# todo add west region to the rbind statement
-all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'), west_afinn %>% mutate(region = 'west'))
+midwest_afinntop50 <- midwest_afinn %>% 
+  mutate(region = 'midwest') 
+midwest_afinntop50 <- head(arrange(midwest_afinntop50, desc(n)), 50) 
 
+east_afinntop50 <- east_afinn %>% 
+  mutate(region = 'east')
+east_afinntop50 <-  head(arrange(east_afinntop50, desc(n)), 50) 
+
+west_afinntop50 <- west_afinn %>% 
+  mutate(region = 'west')
+west_afinntop50 <- head(arrange(west_afinntop50, desc(value)), 50) 
+
+all_regions_afinn = rbind(midwest_afinntop50, east_afinntop50, west_afinntop50)
 ```
 
 ```{r}
@@ -275,7 +284,7 @@ all_regions_afinn %>%
   afinn_cloud_plot(
   )+
   facet_wrap(
-    .~region
+    .~region 
   )
 ```
 
@@ -333,9 +342,9 @@ newswords <- newswords %>%
 ## TF-IDF Plot
 
 ```{r}
-newswords_top20 <- head(arrange(newswords, desc(tf_idf)), 20)
-newswords_top20
-IDFplot <- newswords_top20 %>%
+newswords_top10 <- head(arrange(newswords, desc(tf_idf)), 10)
+newswords_top10
+IDFplot <- newswords_top10 %>%
   ggplot(
     aes(
       x = word,
@@ -357,12 +366,16 @@ IDFplot
 ```
 
 # Analysis
+<<<<<<< HEAD
 
 Your main goal (and the goal of all practicing data scientists!) is to translate this information into action. What patterns do you see, why do you believe this to be the case? What additional information might you want? Be as specific as possible, but keep in mind this is an initial exploratory effort...more analysis might be needed...but the result can and should advise the next steps you present to the firm. 
 
 
 Please submit a cleanly knitted HTML file describing in detail the steps you took along the way, the results of your analysis and most importantly the implications/next steps you would recommend.  You will report your final results and recommendations next week in class. This will be 5 minutes per group. 
 
+=======
+  The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, . To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East, the Midwest, and the West were innovation, care, united, and support. 
+>>>>>>> 919f51745c276f84e348ef468151f2e0e2e7a1bd
 # Conclusion
 
 
