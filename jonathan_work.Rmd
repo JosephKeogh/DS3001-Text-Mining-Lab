@@ -36,6 +36,8 @@ library(tidytext)
 library(ggwordcloud)
 #install.packages('textdata')
 library(textdata)
+library(quanteda)
+#install.packages('quanteda')
 setwd("/cloud/project/tidytext")
 save.image("tidytext.RData")
 ```
@@ -172,7 +174,8 @@ data_prep <- function(x,y,z){
   ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
 }
 
-NYdocs_bag <- data_prep(NYdocs_raw,'V1','V19297')
+NYdocs_bag <- data_prep(NYdocs_raw, 1, 0)
+NYdocs_bag
 PHdocs_bag <- data_prep(PHdocs_raw, 'V1', 'V7171')
 
 newspapers <- c("NewYorkTimes", "PittsburghGazette")
@@ -192,11 +195,11 @@ word_count <- word_count %>%
 total_words <- word_count %>% 
   group_by(newspapers) %>% 
   summarize(total = sum(n))
-
 inag_words <- left_join(word_count, total_words)
 
 inag_words <- inag_words %>%
   bind_tf_idf(word, newspapers, n)
+
 
 View(inag_words)
 

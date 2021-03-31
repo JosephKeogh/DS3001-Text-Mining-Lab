@@ -52,6 +52,9 @@ https://guides.lib.virginia.edu/az.php?a=l
 # Newspapers Selected{.tabset}
 
 ## Eastern Newspapers
+Pittsburgh Gazette - Pennsylvania
+
+New York Times - New York 
 
 ## Midwestern Newspapers
 
@@ -92,10 +95,10 @@ process_rtf = function(file_name){
   # find the count of each word
   rtf_tibble = rtf_tibble %>%
     count(word, sort = TRUE)
-  
+  # remove rows with numbers on it
   rtf_tibble <- rtf_tibble %>% 
     filter(!grepl("[[:digit:]]", word)) 
-  
+  # remove na
   rtf_tibble <- rtf_tibble %>%
     filter(!str_detect(word, "na"))
   
@@ -200,7 +203,11 @@ afinn_plot = function(afinn_data){
       method='loess',
       se=F,
       formula='y~x'
-    )
+    ) + 
+    scale_x_continuous(
+    breaks = seq(-5, 6, by = 1),
+    limits = c(-5, 6)
+  ) 
   
   return(plt)
 }
@@ -232,7 +239,7 @@ all_regions_afinn_hist_data %>%
   afinn_plot() +
   facet_wrap(
     .~region
-  )
+  ) 
 ```
 
 
@@ -240,7 +247,6 @@ all_regions_afinn_hist_data %>%
 ```{r}
 afinn_cloud_plot = function(afinn_data){
   plt = afinn_data %>%
-  head(50) %>%
   ggplot(
     aes(
       label=word,
@@ -273,6 +279,80 @@ all_regions_afinn %>%
   )
 ```
 
+###TF-IDF Analysis
+```{r}
+
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
+}
+# prepares right data format for TF-IDF
+TFIDF_prep <- function(regiontext){
+  data_raw <- as.tibble(read_lines(regiontext))
+  data_bag <- data_prep(data_raw, 1, nrow(data_raw))
+  
+}
+# list of newspapers used
+newspapers <- c("NewYorkTimes", "PittsburghGazette", "TelegraphHerald", "DailyOklahoman")
+
+
+east_1_bag <- TFIDF_prep(east_file_1)
+east_2_bag <- TFIDF_prep(east_file_2)
+midwest_1_bag <- TFIDF_prep(midwest_file_1)
+midwest_2_bag <- TFIDF_prep(midwest_file_2)
+
+tf_idf_text <- tibble(newspapers,text=t(tibble(east_1_bag, east_2_bag, midwest_1_bag, midwest_2_bag,.name_repair = "universal")))
+
+# todo add West newspapers to list 
+
+word_count <- tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(newspapers, word, sort = TRUE)
+
+word_count <- word_count %>% 
+  filter(!grepl("[[:digit:]]", word))
+
+word_count <- word_count%>%
+  inner_join(get_sentiments("afinn"))
+
+word_count <- word_count[,-c(4)]
+
+total_words <- word_count %>% 
+  group_by(newspapers) %>% 
+  summarize(total = sum(n))
+newswords <- left_join(word_count, total_words)
+
+newswords <- newswords %>%
+  bind_tf_idf(word, newspapers, n)
+
+
+View(newswords)
+```
+
+```{r}
+newswords_top20 <- head(arrange(newswords, desc(tf_idf)), 20)
+newswords_top20
+IDFplot <- newswords_top20 %>%
+  ggplot(
+    aes(
+      x = word,
+      y = tf_idf,
+      fill = newspapers
+      )
+    ) +
+  geom_bar(
+      stat='identity'
+    ) + 
+  labs(
+    x = "Word",
+    y = "TF-IDF Value",
+    title = "Top 10 Highest TF-IDF Words"
+  )
+  
+  
+IDFplot
+```
 
 # Analysis
 
