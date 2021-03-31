@@ -63,6 +63,9 @@ The Telegraph Herald - Iowa
 The Daily Oklahoman - Oklahoma
 
 ## Western Newspapers
+The LA Times - California
+
+Spokesman Review - Washington
 
 # Import the data
 ```{r}
@@ -70,6 +73,8 @@ midwest_file_1 = "mid_west_file_1_1.rtf"
 midwest_file_2 = "mid_west_file_2_1.rtf"
 east_file_1 = "NYFiles.RTF"
 east_file_2 = "PhillyFiles.RTF"
+west_file_1 = "California_LATimes_docs.RTF"
+west_file_2 = "Washington_docs.RTF"
 
 #todo add your file names here
 ```
@@ -112,6 +117,8 @@ midwest_1 = process_rtf(midwest_file_1)
 midwest_2 = process_rtf(midwest_file_2)
 east_1 = process_rtf(east_file_1)
 east_2 = process_rtf(east_file_2)
+west_1 = process_rtf(west_file_1)
+west_2 = process_rtf(west__file_2)
 
 #todo add your file names and create your usable datasets
 ```
@@ -131,6 +138,7 @@ combined_newspapers_into_regions = function(paper1, paper2){
 ```{r}
 midwest = combined_newspapers_into_regions(midwest_1, midwest_2)
 east = combined_newspapers_into_regions(east_1, east_2)
+west = combined_newspapers_into_regions(west_1, west_2)
 #todo add your regions here
 ```
 
@@ -169,6 +177,11 @@ east_sent = sentiment(east)
 east_afinn = east_sent$afinn
 east_nrc = east_sent$nrc
 east_bing = east_sent$bing
+
+west_sent = sentiment(west)
+west_afinn = west_sent$afinn
+west_nrc = west_sent$nrc
+west_bing = west_sent$bing
 
 # todo add your region and sentiment analysis here
 ```
@@ -229,9 +242,12 @@ east_afinn_hist_data = east_afinn %>%
   mutate(region = 'east')
 
 # todo add west region here
+west_afinn_hist_data = west_afinn %>%
+  affin_to_histogram_data() %>%
+  mutate(region = 'west')
 
 # todo add west region to the rbind statement
-all_regions_afinn_hist_data = rbind(midwest_afinn_hist_data, east_afinn_hist_data)
+all_regions_afinn_hist_data = rbind(midwest_afinn_hist_data, east_afinn_hist_data, west_afinn_hist_data)
 ```
 
 ```{r}
@@ -266,7 +282,7 @@ afinn_cloud_plot = function(afinn_data){
 ### Combine data for cloud plot
 ```{r}
 # todo add west region to the rbind statement
-all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'))
+all_regions_afinn = rbind(midwest_afinn %>% mutate(region='midwest'), east_afinn %>% mutate(region='east'), west_affin %>% mutate(region = 'west'))
 
 ```
 
@@ -293,15 +309,17 @@ TFIDF_prep <- function(regiontext){
   
 }
 # list of newspapers used
-newspapers <- c("NewYorkTimes", "PittsburghGazette", "TelegraphHerald", "DailyOklahoman")
+newspapers <- c("NewYorkTimes", "PittsburghGazette", "TelegraphHerald", "DailyOklahoman", "LATimes", "SpokesmanReview")
 
 
 east_1_bag <- TFIDF_prep(east_file_1)
 east_2_bag <- TFIDF_prep(east_file_2)
 midwest_1_bag <- TFIDF_prep(midwest_file_1)
 midwest_2_bag <- TFIDF_prep(midwest_file_2)
+west_1_bag <- TFIDF_prep(west_file_1)
+west_2_bag <- TFIDF_prep(west_file_2)
 
-tf_idf_text <- tibble(newspapers,text=t(tibble(east_1_bag, east_2_bag, midwest_1_bag, midwest_2_bag,.name_repair = "universal")))
+tf_idf_text <- tibble(newspapers,text=t(tibble(east_1_bag, east_2_bag, midwest_1_bag, midwest_2_bag,west_1_bag, west_2_bag, .name_repair = "universal")))
 
 # todo add West newspapers to list 
 
