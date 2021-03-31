@@ -329,6 +329,7 @@ newswords <- left_join(word_count, total_words)
 newswords <- newswords %>%
   bind_tf_idf(word, newspapers, n)
 
+newswords
 
 ```
 ## TF-IDF Plot
@@ -359,8 +360,7 @@ IDFplot
 
 # Analysis
 
-  The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, the LA times, and the Spokesman Review. To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East and the Midwest were care, united, and innovation. Popular words used in the West were amazing, win, and love. The top 10 words with the highest TF-IDF values were absentee, accident, amusement, bullshit, earnest, hate, highlight, prisoners, scoop, and unified.  The TF-IDF values indicates how rare the word is within a newspaper.  
-  
+  The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, the LA times, and the Spokesman Review. To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East and the Midwest were care, united, and innovation. Popular words used in the West were amazing, win, and love. The top 10 words with the highest TF-IDF values were absentee, accident, amusement, bullshit, earnest, hate, highlight, prisoners, scoop, and unified.
 # Conclusion 
 
 
