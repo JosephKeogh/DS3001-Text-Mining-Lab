@@ -30,7 +30,10 @@ library(ggwordcloud)
 
 # Problem Statement
 The purpose of this lab was to track the level of support nationally and regionally for the field of Data Science. The goal was to get a general idea of patterns associated with articles being written on the broad topic of data science. To do this, our team explored periodicals from around the country to track relative positive or negative sentiments and word frequencies. We used the library search engine NexusUni to find newspapers from different regions of the U.S. We also divided up the country into 3 main regions for analysis - the east coast, west coast, and midwest. From each region, two main newspapers were selected with no more than 100 articles each on the topic of data science.
+<<<<<<< HEAD
 
+=======
+>>>>>>> 38a05235f1871841a496161e631565f6e6de4145
 
 # Newspapers Selected{.tabset}
 
