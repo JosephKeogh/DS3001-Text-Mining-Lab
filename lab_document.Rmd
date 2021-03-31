@@ -29,24 +29,7 @@ library(ggwordcloud)
 
 
 # Problem Statement
-Congratulations you've successfully transferred from being a NBA 'quant' scout to a consultant specializing in US national sentiment! You've been hired by a non-profit in secret to track the level of support nationally and regionally for the field of Data Science. The goal is to get a general idea of patterns associated with articles being written on the broad topic of Data Science (you can also choose to select a sub-topic). In doing so your data science team has decided to explore periodicals from around the country in a effort to track the relative positive or negative sentiment and word frequencies. Luckily your team has access to a world class library search engine call LexusNexus (NexusUni) that provides access to newspapers from around the country dating back decades. You'll first need to decided what words you want to track and what time might be interesting to begin your search. 
-
-You'll need to select several newspapers from different regions in the country limiting the search to 100 articles from each paper, run sentiment analysis with each newspaper serving as a corpus and then compare the level of positive or negative connotation associated with the outcomes. Also, run tf-idf on each corpus (newspapers) and work to compare the differences between the distributions (5 to 6 newspapers should be fine)
-
-Your main goal (and the goal of all practicing data scientists!) is to translate this information into action. What patterns do you see, why do you believe this to be the case? What additional information might you want? Be as specific as possible, but keep in mind this is an initial exploratory effort...more analysis might be needed...but the result can and should advise the next steps you present to the firm. 
-
-
-Please submit a cleanly knitted HTML file describing in detail the steps you took along the way, the results of your analysis and most importantly the implications/next steps you would recommend.  You will report your final results and recommendations next week in class. This will be 5 minutes per group. 
-
-You will need also need to try to collaborate within your group via a GitHub repo, if you choose it would be fine to assign 1 or 2 regions/newspapers per group member, that can then be added to the repo. Create a main repo, everyone should work in this repo and submit independently using branching/pull requests. If you want to try to use pull request to combine everyone's work into a final project, please do so, but it's not a requirement. Select a repo owner that sets up access (push access) for the week, we will rotate owners next week. Also, submit a link to your the GitHub repo (every group member can submit the same link). 
-
-Create collaborations in GitHub: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-collaborative-development-models
-
-Rstudio Guidance on Git and Github (Including Branching/Pull Requests): https://r-pkgs.org/git.html#git-branch
-
-
-Here is the link to the database search via the UVA Library that should lead you to LexusNexus (Now Nexas Uni)
-https://guides.lib.virginia.edu/az.php?a=l
+The purpose of this lab was to track the level of support nationally and regionally for the field of Data Science. The goal was to get a general idea of patterns associated with articles being written on the broad topic of data science. To do this, our team explored periodicals from around the country to track relative positive or negative sentiments and word frequencies. We used the library search engine NexusUni to find newspapers from different regions of the U.S. We also divided up the country into 3 main regions for analysis - the east coast, west coast, and midwest. From each region, two main newspapers were selected with no more than 100 articles each on the topic of data science.
 
 
 # Newspapers Selected{.tabset}
@@ -76,7 +59,6 @@ east_file_2 = "PhillyFiles.RTF"
 west_file_1 = "California_LATimes_docs.RTF"
 west_file_2 = "Washington_docs.RTF"
 
-#todo add your file names here
 ```
 
 ## Process and clean data for text analysis
@@ -120,7 +102,6 @@ east_2 = process_rtf(east_file_2)
 west_1 = process_rtf(west_file_1)
 west_2 = process_rtf(west_file_2)
 
-#todo add your file names and create your usable datasets
 ```
 
 ## Combine newspapers into regions
@@ -139,7 +120,6 @@ combined_newspapers_into_regions = function(paper1, paper2){
 midwest = combined_newspapers_into_regions(midwest_1, midwest_2)
 east = combined_newspapers_into_regions(east_1, east_2)
 west = combined_newspapers_into_regions(west_1, west_2)
-#todo add your regions here
 ```
 
 # Sentiment analysis
@@ -183,7 +163,6 @@ west_afinn = west_sent$afinn
 west_nrc = west_sent$nrc
 west_bing = west_sent$bing
 
-# todo add your region and sentiment analysis here
 ```
 
 
@@ -241,12 +220,10 @@ east_afinn_hist_data = east_afinn %>%
   afinn_to_histogram_data() %>%
   mutate(region = 'east')
 
-# todo add west region here
 west_afinn_hist_data = west_afinn %>%
   afinn_to_histogram_data() %>%
   mutate(region = 'west')
 
-# todo add west region to the rbind statement
 all_regions_afinn_hist_data = rbind(midwest_afinn_hist_data, east_afinn_hist_data, west_afinn_hist_data)
 ```
 
@@ -331,8 +308,6 @@ west_2_bag <- TFIDF_prep(west_file_2)
 
 tf_idf_text <- tibble(newspapers,text=t(tibble(east_1_bag, east_2_bag, midwest_1_bag, midwest_2_bag,west_1_bag, west_2_bag, .name_repair = "universal")))
 
-# todo add West newspapers to list 
-
 word_count <- tf_idf_text %>%
   unnest_tokens(word, text) %>%
   anti_join(stop_words) %>%
@@ -383,8 +358,11 @@ IDFplot
 ```
 
 # Analysis
+
   The six newspapers we chose were the New York Times, the Pittsburgh Gazette, the Telegraph Herald, the Daily Oklahoma, the LA times, and the Spokesman Review. To do the sentiment analysis we used afinn, bing, and nrc. As seen in the histogram using afinn sentiment analysis, a trend that we noticed with the overall sentiment presented in the newspapers were that the words used by the newspapers were fairly negative. Commonly shared words between the East and the Midwest were care, united, and innovation. Popular words used in the West were amazing, win, and love. The top 10 words with the highest TF-IDF values were absentee, accident, amusement, bullshit, earnest, hate, highlight, prisoners, scoop, and unified.  The TF-IDF values indicates how rare the word is within a newspaper.  
+  
 # Conclusion 
+
 
 
 
